@@ -1,0 +1,45 @@
+<launch>
+    <!-- Setup static transforms for the world and robot -->
+    <!--
+        The values for each static transform are loaded as parameters from yaml
+        files. This makes the values more human readable and easier to change
+        for individual sensors without needing to alter this launch file.
+
+        The arguments for each 'tf' node are as follows.
+        args = "x y z qx qy qz qw frame_id child_frame_id  period_in_ms"
+        x,y,z: translation to origin of child_frame_id in meters
+        qx,qy,qz,qw: rotation of frame_id to get to child_frame_id as a
+            quaternion
+        frame_id: name of original frame
+        child_frame_id: name of frame you are transforming to
+        period_in_ms: time between transform publishes (100ms = 10Hz)
+    -->
+
+    <!-- odom (world), fixed point on the map where we choose to start our odomframe, this does not have to be (0,0) -->
+    <!--node pkg = "tf"
+        type = "static_transform_publisher"
+        name = "odom_broadcaster"
+        args = "0 0 0 0 0 0 1 world odom 100" -->
+
+    <!-- camera (base_link) -->
+    <!--
+    camera_link
+    camera_rgb_frame
+    camera_rgb_optical_frame
+    -->
+<node pkg="setup_tf_mb" type="setup_tf_mb_node" name="setup_tf_mb_node" respawn="true"/>
+
+    <node pkg = "tf"
+        type = "static_transform_publisher"
+        name = "camera_broadcaster"
+        args = "0 0 0.7 0 0 0 1 base_link sensor_link 50" />
+    <node pkg = "tf"
+        type = "static_transform_publisher"
+        name = "basefoot2link_broadcaster"
+        args = "0 0 0.01 0 0 0 1 base_footprint base_link 50" />
+ <!-- <node pkg = "tf"
+        type = "static_transform_publisher"
+        name = "sensor_broadcaster"
+        args = "0.135 0 0 0 0.349066 0 sensor_link os1 50" />
+   -->
+</launch>

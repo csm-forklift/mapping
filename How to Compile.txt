@@ -1,0 +1,10 @@
+In order for the mapping to work correctly and go at a reasonable speed you must compile the 'mapping' package differenty from the others.
+
+First compile everything as normal:
+(navigate to workspace top directory)
+
+$ catkin_make
+
+Then you need to compile mapping as 'Release' version:
+
+$ catkin_make --pkg mapping -DCMAKE_BUILD_TYPE=Release

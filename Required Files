@@ -1,0 +1,43 @@
+CPPS:
+
+
+Elevation Map
+xxxxxxKINDR NEEDS TO BE CORRECTED
+
+Mapping
+xxxxxxKINDR NEEDS TO BE CORRECTED
+
+RobotUpdater
+KINDR NEEDS TO BE CORRECTED
+
+PUT RtoE code in computeReducedCovariance. should be on comp for cailie
+
+Need to finish other compute function and then pray nothing else breaks and it works at run time.
+
+KinectProcessor
+xxxxxxKINDR NEEDS TO BE CORRECTED
+
+BaseProcessor
+xxxxxxKINDR NEEDS TO BE CORRECTED
+
+
+Headers:
+
+
+Elevation Map
+xxxxxxKINDR NEEDS TO BE CORRECTED
+
+Mapping
+xxxxxxxKINDR NEEDS TO BE CORRECTED
+
+RobotUpdater
+xxxxKINDR NEEDS TO BE CORRECTED
+
+SensorProcessorBase
+xxxxKINDR NEEDS TO BE CORRECTED
+
+RobotMotionMapUpdater
+xxxxKINDR NEEDS TO BE CORRECTED
+
+KinectSensor 
+xxxxx

@@ -1,0 +1,108 @@
+
+#include <ros/ros.h>
+#include <string>
+#include <grid_map_ros/grid_map_ros.hpp>
+#include <grid_map_msgs/GridMap.h>
+#include <nav_msgs/OccupancyGrid.h>
+#include <nav_msgs/MapMetaData.h>
+#include <grid_map_ros/GridMapRosConverter.hpp>
+#include <sensor_msgs/PointCloud2.h>
+#include <nav_msgs/Path.h>
+#include "mapping/ElevationMapping.hpp"
+
+#include <costmap_2d/costmap_2d_ros.h>
+#include <costmap_2d/costmap_2d.h> 
+#include <nav_core/base_global_planner.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <angles/angles.h>
+#include <base_local_planner/world_model.h>
+#include <base_local_planner/costmap_model.h>
+#include <turtlebot_actions/TurtlebotMoveAction.h>
+#include <actionlib/client/simple_action_client.h>
+//#include <grid_map_visualization/grid_map_visualization.h>
+
+//
+
+ros::Publisher pubmap, pclpub;
+  
+void GridMapCallback(const grid_map_msgs::GridMap& message){
+
+grid_map::GridMap map;
+float min = -0.2;
+float max = 1.5;
+
+grid_map::GridMapRosConverter::fromMessage(message, map);
+//std::cout << map.at("elevation") << std::endl;
+const std::string& layer = "elevation";
+const std::string& layer2 = "variance";
+nav_msgs::OccupancyGrid occ; 
+nav_msgs::MapMetaData datz;
+
+grid_map::GridMapRosConverter::toOccupancyGrid(map,layer,min,max, occ);
+datz = occ.info;
+
+pubmap.publish(occ);
+
+std::cout << datz.width << "," <<datz.height << std::endl;
+int occ_map[datz.height][datz.width];
+
+for (int rows = 0; rows < datz.height; rows++){
+
+	for(int cols = 0; cols < datz.width; cols++){
+		
+		int i = rows*datz.width;
+
+		occ_map[rows][cols] = occ.data[i+cols];
+
+	}
+}
+
+}
+
+
+int main(int argc, char** argv)
+{
+  ros::init(argc, argv, "mapping");
+  ROS_INFO("Starting navi.cpp");
+  ros::NodeHandle n;
+  ros::Subscriber submap, pclconv;
+  pubmap = n.advertise<nav_msgs::OccupancyGrid>("DA_Gridz", 1,true);
+  //submap = n.subscribe("POINTZ",5,MotionCB);
+
+ // pclpub = n.advertise<sensor_msgs::PointCloud2>("/elevation_mapping/camera/depth_regristered/points",5,true);
+n.setParam("sensor_processor/type", "Kinect");
+n.setParam("sensor_processor/cutoff_min_depth", 0.35);
+n.setParam("sensor_processor/cutoff_max_depth", 3.0);
+n.setParam("sensor_processor/normal_factor_a", 0.0012);
+n.setParam("sensor_processor/normal_factor_b", 0.0019);
+n.setParam("sensor_processor/normal_factor_c", 0.4);
+n.setParam("sensor_processor/lateral_factor", 0.001376915); 
+n.setParam("robot_base_frame_id", "base_link");
+  n.setParam("map_frame_id", "odom");
+  //while (n.ok()){
+  	//ROS_INFO("IN WHILE LOOP");
+  //pclconv = n.subscribe("camera/depth_regristered/points", 100, PclCallBack);
+submap = n.subscribe("/mapping/ele_map_raw",5,GridMapCallback);
+
+
+
+ // }
+
+
+ 
+
+  //elevation_mapping::ElevationMapping elevationMap(nodeHandle);
+//   n.setParam("point_cloud_topic", "camera/depth_regristered/points");
+//   n.setParam("robot_pose_with_covariance_topic", "/odom");
+//   n.setParam("track_point_frame_id", "base_link");
+//   n.setParam("track_point_x",1.0);
+//   n.setParam("track_point_y", 1.0);
+//   n.setParam("track_point_z", 1.0);
+
+
+  // Spin
+  ros::spin();
+  ros::waitForShutdown();
+  return 0;
+}
+// }

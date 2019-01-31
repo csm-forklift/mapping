@@ -1,0 +1,21 @@
+#include <ros/ros.h>
+#include "mapping/ElevationMapping.hpp"
+
+
+int main(int argc, char** argv){
+	ROS_INFO("Starting mapping node");
+	ros::init(argc,argv,"mappingz");
+
+	ros::NodeHandle nh_;
+	
+	//mapping::ElevationMapping ElevationMapping(nh_); 
+
+
+	ros::AsyncSpinner spinner(1); // Use n threads
+	spinner.start();
+	ros::waitForShutdown();
+	return 0;
+
+
+
+}

@@ -1,0 +1,14 @@
+length_in_x: 10.0
+length_in_y: 10.0
+position_x: 0.0
+position_y: 0.0
+resolution: 0.4
+min_variance: 0.0001
+max_variance: 10000.0
+mahalanobis_distance_threshold: 2.5
+multi_height_noise: 0.00002
+surface_normal_estimation_radius: 0.015
+surface_normal_positive_axis: z
+fused_map_pulishing_rate: 30
+map_frame_id: map
+point_cloud_topic: /os1_node/points

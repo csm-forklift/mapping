@@ -1,29 +1,27 @@
 <launch>
 
-    <include file="$(find mapping)/launch/obstacle_mapping_tf.launch"/>
-<!-- Commenting this out until we know that dilation is working correctly!! -->
+    <!-- Commenting this out until we know that dilation is working correctly!! -->
     <node pkg="mapping" type="mapping" name="mapping" respawn="true">
-    	<param name="length_in_x" value ="11.0"/>
-    	<param name="length_in_y" value="11.0"/>
-    	<param name="resolution" value ="0.25"/>
+    	<param name="length_in_x" value ="40.0"/>
+    	<param name="length_in_y" value="40.0"/>
+    	<param name="resolution" value ="0.5"/>
     	<param name="min_update_rate" value = "10.0"/>
     	<param name="fused_map_publishing_rate" value="10.0"/>
     	<param name="sensor_processor/type" value="Laser"/>
     	<param name="surface_normal_estimation_radius" value="0.990"/>
-    	<param name="/sensor_processor/ignore_points_above" value="0.25"/>
+    	<param name="/sensor_processor/ignore_points_above" value="0.75"/>
     	<param name="/sensor_processor/ignore_points_below" value="-10.0"/>
         <param name="/sensor_processor/min_radius" value="0.0001" />
         <param name="/sensor_processor/beam_angle" value="0.001" />
         <param name="/sensor_processor/beam_constant" value="0.01" />
-    	<param name ="point_cloud_topic" value="/back_lidar_filtered"/>
+    	<param name ="point_cloud_topic" value="/back_lidar_points"/>
     </node>
-
-    <!-- <node pkg ="robust_navigation" type="elevation_map_node" name="elevation_map_node" respawn ="true"/> -->
 
     <node pkg ="mapping" type="map_build_node" name="map_build_node" respawn="true">
     	<param name="base_height" value="0.10"/>
-    	<param name="robot_width" value="0.4"/>
+    	<param name="robot_width" value="1.0"/>
     	<param name="erode_size" value= "1"/>
+    	<remap from="/map" to="/obstacle_map"/>
     </node>
 
 </launch>

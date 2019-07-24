@@ -152,11 +152,17 @@ bool ElevationMap::add(const pcl::PointCloud<pcl::PointXYZRGB>::Ptr pointCloud, 
     double mahalanobisDistance = sqrt(pow(point.z - elevation, 2) / variance);
 
     if (mahalanobisDistance > mahalanobisDistanceThreshold_) {
-      // Add noise to cells which have ignored lower values,
-      // such that outliers and moving objects are removed.
-      variance += multiHeightNoise_;
-      //ROS_INFO("Counter in mahalanis if %i", counter2);
-      //counter2++;
+      if (point.z > elevation) {
+          elevation = point.z;
+          variance = pointVariance;
+      }
+      else {
+          // Add noise to cells which have ignored lower values,
+          // such that outliers and moving objects are removed.
+          variance += multiHeightNoise_;
+          //ROS_INFO("Counter in mahalanis if %i", counter2);
+          //counter2++;
+      }
       continue;
     }
 

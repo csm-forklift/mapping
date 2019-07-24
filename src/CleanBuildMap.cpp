@@ -44,7 +44,7 @@ int dilationSize;
 public:
 	Map_builder() :nh_("~"){
 		pubmap = nh_.advertise<nav_msgs::OccupancyGrid>("/original_map",1,true);
-		pubmap1 = nh_.advertise<nav_msgs::OccupancyGrid>("/map",1,true);
+		pubmap1 = nh_.advertise<nav_msgs::OccupancyGrid>("/obstacle_map",1,true);
 		nh_.param("/map_build_node/base_height",base_height,0.05);
 		nh_.param("/map_build_node/robot_width",robot_width,0.4);
 		nh_.param("/mapping/resolution",resolution,0.4);
@@ -62,13 +62,18 @@ public:
     	const std::string& layer = "elevation";
     	float temp_value;
     	for (grid_map::GridMapIterator iterator(map); !iterator.isPastEnd(); ++iterator) {
-      		if(map.at(layer, *iterator) < 0.0){
-        		temp_value = abs(map.at(layer,*iterator));
-      		}
-      		else{
-        		temp_value = map.at(layer,*iterator);
-      		}
-      		map.at(layer, *iterator) = temp_value;
+            if(map.at(layer,*iterator) > 2.0){
+                map.at(layer,*iterator) = 2.0;
+            }
+            
+
+        	//if(map.at(layer, *iterator) < 0.0){
+        		//temp_value = abs(map.at(layer,*iterator));
+      		//}
+      		//else{
+        	//	temp_value = map.at(layer,*iterator);
+      		//}
+      	//	map.at(layer, *iterator) = temp_value;
     	}
 		grid_map::GridMapRosConverter::toOccupancyGrid(map,layer,0.0,1.0, ele_occupancy);
 
@@ -154,8 +159,10 @@ public:
 			int row = k/occ_grid.info.height;
 		 	int col = k%occ_grid.info.height;
 		 	if(occ_grid.data[k]== -1){
-		 		occ_grid.data[k] = -1;
-				src.at<float>(row,col) = 2; // This is for an open square (white)
+		 		// occ_grid.data[k] = -1;
+				// src.at<float>(row,col) = 2; // This is for an open square (white)
+                occ_grid.data[k] = 0;
+                src.at<float>(row,col) = 1;
 		 	}
 		 	else if(occ_grid.data[k] <= 100*(base_height - 0.0)){
 		 		occ_grid.data[k] = 0;

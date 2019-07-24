@@ -82,8 +82,8 @@ bool ElevationMap::readParameters()
   //ROS_INFO("Length=%f and width=%f", length(0),length(1));
   nodeHandle_.param("min_variance", minVariance_, pow(0.003, 2));
   nodeHandle_.param("max_variance", maxVariance_, pow(0.3, 2));
-  nodeHandle_.param("mahalanobis_distance_threshold", mahalanobisDistanceThreshold_, 5.0);
-  nodeHandle_.param("multi_height_noise", multiHeightNoise_, pow(0.3, 2));
+  nodeHandle_.param("mahalanobis_distance_threshold", mahalanobisDistanceThreshold_, 0.8);
+  nodeHandle_.param("multi_height_noise", multiHeightNoise_, pow(0.03, 2));
   nodeHandle_.param("min_horizontal_variance", minHorizontalVariance_, pow(resolution / 2.0, 2)); // two-sigma
   nodeHandle_.param("max_horizontal_variance", maxHorizontalVariance_, 1.5);
   nodeHandle_.param("surface_normal_estimation_radius", surfaceNormalEstimationRadius_, 0.05);

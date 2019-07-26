@@ -65,7 +65,7 @@ ElevationMapping::ElevationMapping(ros::NodeHandle nodeHandle)
       //listener.waitForTransform("/odom", "/map",ros::Time(0), ros::Duration(0.5));
     //  listener.lookupTransform("/odom", "/map", ros::Time(0), tran3);
     // robot frame to map frame
-    listener.waitForTransform("/base_link", "/world",ros::Time(0), ros::Duration(0.5));
+    listener.waitForTransform("/base_link", "/world",ros::Time(0), ros::Duration(0.2));
     listener.lookupTransform("/base_link", "/world", ros::Time(0), tran3);
   }
   catch(tf::TransformException ex) {
@@ -136,7 +136,7 @@ bool ElevationMapping::readParameters()
   ROS_ASSERT(robotPoseCacheSize_ >= 0);
 
   double minUpdateRate;
-  nodeHandle_.param("min_update_rate", minUpdateRate, 10.0);
+  nodeHandle_.param("min_update_rate", minUpdateRate, 30.0);
   maxNoUpdateDuration_.fromSec(1.0 / minUpdateRate);
   ROS_ASSERT(!maxNoUpdateDuration_.isZero());
 
@@ -145,7 +145,7 @@ bool ElevationMapping::readParameters()
   timeTolerance_.fromSec(timeTolerance);
 
   double fusedMapPublishingRate;
-  nodeHandle_.param("fused_map_publishing_rate", fusedMapPublishingRate,10.0);
+  nodeHandle_.param("fused_map_publishing_rate", fusedMapPublishingRate,30.0);
 
 
   if (fusedMapPublishingRate == 0.0) {

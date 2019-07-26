@@ -43,13 +43,15 @@ int dilationSize;
 
 public:
 	Map_builder() :nh_("~"){
+        std::string map_topic;
+        nh_.param<std::string>("map_topic", map_topic, "/mapping/ele_map");
 		pubmap = nh_.advertise<nav_msgs::OccupancyGrid>("/original_map",1,true);
 		pubmap1 = nh_.advertise<nav_msgs::OccupancyGrid>("/obstacle_map",1,true);
 		nh_.param("/map_build_node/base_height",base_height,0.05);
 		nh_.param("/map_build_node/robot_width",robot_width,0.4);
 		nh_.param("/mapping/resolution",resolution,0.4);
 		nh_.param("/map_build_node/erode_size",dilationSize,0);
-		submap = nh_.subscribe("/mapping/ele_map",1,&Map_builder::GridMapCallback, this);
+		submap = nh_.subscribe(map_topic.c_str(),1,&Map_builder::GridMapCallback, this);
         //submap = nh_.subscribe("/map", 1, &Map_builder::GridMapCallback, this);
 		// orig_Map = CreateMap();
 		// dilated_Map1 = DilateMap(orig_Map);
@@ -65,7 +67,7 @@ public:
             if(map.at(layer,*iterator) > 2.0){
                 map.at(layer,*iterator) = 2.0;
             }
-            
+
 
         	//if(map.at(layer, *iterator) < 0.0){
         		//temp_value = abs(map.at(layer,*iterator));

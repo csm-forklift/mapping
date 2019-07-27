@@ -18,20 +18,41 @@ class PCLMerger{
 		Eigen::Affine3d transformationSensorToOdom_;
 		tf::TransformListener transformListener_;
 		tf::StampedTransform transformTf;
+        int num_scans;
+        int counter =0;
 		int seq = 0;
 	public:
 		PCLMerger() : nh_("~") {
-			pcl_sub = nh_.subscribe("/os1_node/points", 1,&PCLMerger::PCLCallback, this);
-            cloud_pub = nh_.advertise<sensor_msgs::PointCloud2>("/big_stored_pointcloud",4);
+            nh_.param<int>("num_scans", num_scans, 31);
+			pcl_sub = nh_.subscribe("segmented_scan", 1,&PCLMerger::PCLCallback, this);
+            cloud_pub = nh_.advertise<sensor_msgs::PointCloud2>("single_scan",4);
 		}
 		void PCLCallback(const sensor_msgs::PointCloud2& msg){
 			pcl::PCLPointCloud2 pcl_pc;
 			pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloud(new pcl::PointCloud<pcl::PointXYZ>);
 			pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloudTransformed(new pcl::PointCloud<pcl::PointXYZ>);
 
-			pcl_conversions::toPCL(msg, pcl_pc);
-	  		pcl::fromPCLPointCloud2(pcl_pc, *pointCloud);
-	  		if(TransformPointCloud(pointCloud, pointCloudTransformed,"/odom")){
+            pcl_conversions::toPCL(msg, pcl_pc);
+            pcl_conversions::fromPCL(pcl_pc,current_cloud);
+            if(counter==0){
+                old_cloud = current_cloud;
+            	old_cloud.header.seq = seq;
+            	counter++;
+            }
+            else if(counter<=num_scans){
+             	counter++;
+                sensor_msgs::PointCloud2 temp_cloud;
+             	pcl::concatenatePointCloud(current_cloud,old_cloud,temp_cloud);
+                old_cloud = temp_cloud;
+            }
+            else{
+              	old_cloud.header.frame_id = "lidar0_link";
+            	old_cloud.header.seq = old_cloud.header.seq + 1;
+            	old_cloud.header.stamp = ros::Time::now();
+              	cloud_pub.publish(old_cloud);
+              	counter=0;
+            }
+	  		/*if(TransformPointCloud(pointCloud, pointCloudTransformed,"/odom")){
 	  			ROS_INFO("Transform Complete!");
 
             }
@@ -72,7 +93,7 @@ class PCLMerger{
 				old_cloud.header.stamp = ros::Time::now();
                 cloud_pub.publish(old_cloud);
 
-			}
+			}*/
 		}
 		bool TransformPointCloud(const pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloud, pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloudTransformed, const std::string& targetFrame){
             transformListener_.waitForTransform("odom", "os1", ros::Time(0), ros::Duration(0.1));

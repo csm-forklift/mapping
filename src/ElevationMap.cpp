@@ -413,10 +413,10 @@ bool ElevationMap::fuse(const grid_map::Index& topLeftIndex, const grid_map::Ind
   ros::WallDuration duration(ros::WallTime::now() - time);
   ROS_INFO("Elevation map has been fused in %f s.", duration.toSec());
   //cout <<computeSurfaceNormals<<endl;
-  if(!computeSurfaceNormals){
-  return ElevationMap::computeSurfaceNormals(topLeftIndex, size);
-
-  }
+ // if(!computeSurfaceNormals){
+ // return ElevationMap::computeSurfaceNormals(topLeftIndex, size);
+ //
+ // }
 
 
 

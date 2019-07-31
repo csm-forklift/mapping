@@ -4,15 +4,15 @@
     <node pkg="mapping" type="mapping" name="mapping" respawn="true">
     	<param name="length_in_x" value ="70.0"/>
     	<param name="length_in_y" value="70.0"/>
-    	<param name="resolution" value ="0.25"/>
+    	<param name="resolution" value ="0.5"/>
     	<param name="min_variance" value="0.0009"/>
     	<param name="max_variance" value="0.09"/>
     	<param name="mahalanobis_distance_threshold" value="0.08"/>
     	<param name="min_horizontal_variance" value=".125"/>
     	<param name="max_horizontal_variance" value="0.5"/>
     	<param name="multi_height_noise" value="0.0009"/>
-    	<param name="min_update_rate" value = "30.0"/>
-    	<param name="fused_map_publishing_rate" value="30.0"/>
+    	<param name="min_update_rate" value = "10.0"/>
+    	<param name="fused_map_publishing_rate" value="10.0"/>
     	<param name="sensor_processor/type" value="Laser"/>
     	<param name="surface_normal_estimation_radius" value="0.990"/>
     	<param name="/sensor_processor/ignore_points_above" value="2.750"/>

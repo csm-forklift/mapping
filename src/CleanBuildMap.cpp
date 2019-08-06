@@ -45,7 +45,7 @@ public:
 	Map_builder() :nh_("~"){
         std::string map_topic;
         nh_.param<std::string>("map_topic", map_topic, "/mapping/ele_map");
-		pubmap = nh_.advertise<nav_msgs::OccupancyGrid>("/original_map",1,true);
+		//pubmap = nh_.advertise<nav_msgs::OccupancyGrid>("/original_map",1,true);
 		pubmap1 = nh_.advertise<nav_msgs::OccupancyGrid>("/obstacle_map",1,true);
 		nh_.param("/map_build_node/base_height",base_height,0.05);
 		nh_.param("/map_build_node/robot_width",robot_width,0.4);
@@ -67,7 +67,9 @@ public:
             if(map.at(layer,*iterator) > 2.0){
                 map.at(layer,*iterator) = 2.0;
             }
-
+            if(map.at(layer,*iterator) < 0.01){
+                map.at(layer,*iterator) = 0.0;
+            }
 
         	// if(map.at(layer, *iterator) < 0.0){
         	// 	temp_value = abs(map.at(layer,*iterator));
@@ -79,7 +81,7 @@ public:
     	}
 		grid_map::GridMapRosConverter::toOccupancyGrid(map,layer,0.0,1.0, ele_occupancy);
 
-		pubmap.publish(ele_occupancy);
+		//pubmap.publish(ele_occupancy);
 		dilated_Map1 = DilateMap(ele_occupancy);
 		pubmap1.publish(dilated_Map1);
 
@@ -141,8 +143,8 @@ public:
 		  tf::TransformListener listener;
 		  try{
 		  //	ros::Time now = ros::Time(0);
-		  	listener.waitForTransform("/base_link", "/base_link", ros::Time(0), ros::Duration(4.0));
-		  	listener.lookupTransform("/base_link","/base_link", ros::Time(0), odom_base_transform);
+		  	listener.waitForTransform("/odom", "/base_link", ros::Time(0), ros::Duration(4.0));
+		  	listener.lookupTransform("/odom","/base_link", ros::Time(0), odom_base_transform);
 		  }
 		  catch(tf::TransformException &ex){
 		    ROS_ERROR("%s",ex.what());
@@ -162,11 +164,11 @@ public:
 		 	int col = k%occ_grid.info.height;
 		 	if(occ_grid.data[k] == -1){
                 // Keeps unexplored cells at a higher cost
-		 		occ_grid.data[k] = -1;
-				src.at<float>(row,col) = 2; // This is for an open square (white)
+		 		//occ_grid.data[k] = -1;
+				//src.at<float>(row,col) = 2; // This is for an open square (white)
                 // Turns unexplored cells into empty cells
-                // occ_grid.data[k] = 0;
-                // src.at<float>(row,col) = 1;
+                occ_grid.data[k] = 0;
+                src.at<float>(row,col) = 1;
 		 	}
 		 	else if(occ_grid.data[k] <= 100*(base_height - 0.0)){
 		 		occ_grid.data[k] = 0;

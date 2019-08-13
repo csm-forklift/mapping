@@ -26,7 +26,7 @@
     <node pkg ="mapping" type="map_build_node" name="map_build_node" respawn="true">
     	<param name="base_height" value="0.15"/>
     	<param name="robot_width" value="1.4"/>
-    	<param name="erode_size" value= "1"/>
+    	<param name="erode_size" value= "2"/>
     	<param name="map_topic" value="/mapping/ele_map"/>
     </node>
 

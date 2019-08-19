@@ -26,6 +26,10 @@
 #include <Eigen/Core>
 #include <Eigen/Dense>
 
+// PCL Conversions
+#include <pcl_ros/point_cloud.h>
+#include <pcl_conversions/pcl_conversions.h>
+
 using namespace std;
 using namespace grid_map;
 //using namespace sm;
@@ -56,6 +60,8 @@ ElevationMap::ElevationMap(ros::NodeHandle nodeHandle)
   clear();
   elevationMapRawPublisher_ = nodeHandle_.advertise<grid_map_msgs::GridMap>("ele_map_raw", 10);
   elevationMapFusedPublisher_ = nodeHandle_.advertise<grid_map_msgs::GridMap>("ele_map", 10);
+  debug_pcl_pub = nodeHandle_.advertise<sensor_msgs::PointCloud2>("debug_pointcloud", 1);
+
   if (!underlyingMapTopic_.empty()) underlyingMapSubscriber_ =
       nodeHandle_.subscribe(underlyingMapTopic_, 1, &ElevationMap::underlyingMapCallback, this);
 }
@@ -118,6 +124,14 @@ bool ElevationMap::add(const pcl::PointCloud<pcl::PointXYZRGB>::Ptr pointCloud, 
               (int) pointCloud->size(), (int) pointCloudVariances.size());
     return false;
   }
+
+  // DEBUG: publish pointcloud
+  pcl::PCLPointCloud2 pcl_pc2;
+  sensor_msgs::PointCloud2 msg;
+  pcl::toPCLPointCloud2(*pointCloud, pcl_pc2);
+  pcl_conversions::fromPCL(pcl_pc2, msg);
+  debug_pcl_pub.publish(msg);
+
   int counter = 0;
   int counter2 =0;
   for (unsigned int i = 0; i < pointCloud->size(); ++i) {
@@ -125,7 +139,7 @@ bool ElevationMap::add(const pcl::PointCloud<pcl::PointXYZRGB>::Ptr pointCloud, 
 
     Index index;
     Position position(point.x, point.y);
-    if (!rawMap_.getIndex(position, index)) {continue;}// Skip this point if it does not lie within the elevation map.
+    if (!rawMap_.getIndex(position, index)) {std::cout << "Index: False\n"; std::cout << "Position: " << position << "\n"; continue;}// Skip this point if it does not lie within the elevation map.
 
     auto& elevation = rawMap_.at("elevation", index);
     auto& variance = rawMap_.at("variance", index);
@@ -134,6 +148,12 @@ bool ElevationMap::add(const pcl::PointCloud<pcl::PointXYZRGB>::Ptr pointCloud, 
     auto& horizontalVarianceXY = rawMap_.at("horizontal_variance_xy", index);
     //auto& color = rawMap_.at("color", index);
     const float& pointVariance = pointCloudVariances(i);
+    //const float& pointVariance = 0.01;
+
+    if (!std::isfinite(point.z)) {
+        std::cout << "================= NOT FINITE ==================\n";
+        continue;
+    }
 
     if (!rawMap_.isValid(index))
     {
@@ -154,7 +174,7 @@ bool ElevationMap::add(const pcl::PointCloud<pcl::PointXYZRGB>::Ptr pointCloud, 
     if (mahalanobisDistance > mahalanobisDistanceThreshold_) {
       if (point.z > elevation) {
           elevation = point.z;
-          variance = pointVariance;
+          //variance = pointVariance;
       }
       else {
           // Add noise to cells which have ignored lower values,
@@ -172,11 +192,19 @@ bool ElevationMap::add(const pcl::PointCloud<pcl::PointXYZRGB>::Ptr pointCloud, 
     // TODO Add color fusion.
     //colorVectorToValue(point.getRGBVector3i(), color);
 
+    if (!std::isfinite(elevation)) {
+        std::cout << "ELEVATION NOT FINITE!\n";
+    }
+
     // Horizontal variances are reset.
     horizontalVarianceX = minHorizontalVariance_;
     horizontalVarianceY = minHorizontalVariance_;
     horizontalVarianceXY = 0.0;
   }
+
+  // DEBUG:
+  std::cout << "Counter: " << counter << "\n";
+
   clean();
   rawMap_.setTimestamp(1000 * pointCloud->header.stamp); // Point cloud stores time in microseconds.
   return true;
@@ -417,10 +445,7 @@ bool ElevationMap::fuse(const grid_map::Index& topLeftIndex, const grid_map::Ind
  // return ElevationMap::computeSurfaceNormals(topLeftIndex, size);
  //
  // }
-
-
-
-
+ 
   return true;
 }
 

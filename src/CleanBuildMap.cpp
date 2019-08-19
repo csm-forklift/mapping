@@ -45,7 +45,7 @@ public:
 	Map_builder() :nh_("~"){
         std::string map_topic;
         nh_.param<std::string>("map_topic", map_topic, "/mapping/ele_map");
-		//pubmap = nh_.advertise<nav_msgs::OccupancyGrid>("/original_map",1,true);
+		pubmap = nh_.advertise<nav_msgs::OccupancyGrid>("/original_map",1,true);
 		pubmap1 = nh_.advertise<nav_msgs::OccupancyGrid>("/obstacle_map",1,true);
 		nh_.param("/map_build_node/base_height",base_height,0.05);
 		nh_.param("/map_build_node/robot_width",robot_width,0.4);
@@ -63,25 +63,42 @@ public:
  		grid_map::GridMapRosConverter::fromMessage(message, map);
     	const std::string& layer = "elevation";
     	float temp_value;
-    	for (grid_map::GridMapIterator iterator(map); !iterator.isPastEnd(); ++iterator) {
-            if(map.at(layer,*iterator) > 2.0){
-                map.at(layer,*iterator) = 2.0;
-            }
-            if(map.at(layer,*iterator) < 0.01){
-                map.at(layer,*iterator) = 0.0;
-            }
+        float ele_max = -100;
+        float ele_min = 100;
+    	// for (grid_map::GridMapIterator iterator(map); !iterator.isPastEnd(); ++iterator) {
+        //     if (map.at(layer,*iterator) < ele_min) {
+        //         ele_min = map.at(layer,*iterator);
+        //     }
+        //     if (map.at(layer,*iterator) > ele_max) {
+        //         ele_max = map.at(layer,*iterator);
+        //     }
+        //     if(map.at(layer,*iterator) < -0.35){
+        //         map.at(layer,*iterator) = -0.35;
+        //     }
+        //     map.at(layer,*iterator) +=0.35;
+        //
+        //     if(map.at(layer,*iterator) > 2.0){
+        //         map.at(layer,*iterator) = 2.0;
+        //     }
+        //
+        //
+        // 	// if(map.at(layer, *iterator) < 0.0){
+        // 	// 	temp_value = abs(map.at(layer,*iterator));
+      	// 	// }
+      	// 	// else{
+        // 	// 	temp_value = map.at(layer,*iterator);
+      	// 	// }
+      	// 	// map.at(layer, *iterator) = temp_value;
+    	// }
 
-        	// if(map.at(layer, *iterator) < 0.0){
-        	// 	temp_value = abs(map.at(layer,*iterator));
-      		// }
-      		// else{
-        	// 	temp_value = map.at(layer,*iterator);
-      		// }
-      		// map.at(layer, *iterator) = temp_value;
-    	}
-		grid_map::GridMapRosConverter::toOccupancyGrid(map,layer,0.0,1.0, ele_occupancy);
+        //std::cout << "===================================================\n";
+        //std::cout << "Map max: " << ele_max << "\n";
+        //std::cout << "Map min: " << ele_min << "\n";
+        //std::cout << "===================================================\n";
 
-		//pubmap.publish(ele_occupancy);
+		grid_map::GridMapRosConverter::toOccupancyGrid(map,layer,-0.5,0.0, ele_occupancy);
+
+		pubmap.publish(ele_occupancy);
 		dilated_Map1 = DilateMap(ele_occupancy);
 		pubmap1.publish(dilated_Map1);
 

@@ -77,7 +77,7 @@ class ElevationMap
   bool update(const grid_map::Matrix& varianceUpdate,
               const grid_map::Matrix& horizontalVarianceUpdateX,
               const grid_map::Matrix& horizontalVarianceUpdateY,
-              const grid_map::Matrix& horizontalVarianceUpdateXY, 
+              const grid_map::Matrix& horizontalVarianceUpdateXY,
 	      const ros::Time& time);
 
   /*!
@@ -273,7 +273,7 @@ class ElevationMap
   //! ROS publishers.
   ros::Publisher elevationMapRawPublisher_;
   ros::Publisher elevationMapFusedPublisher_;
-
+  ros::Publisher debug_pcl_pub;
   //! Mutex lock for fused map.
   boost::recursive_mutex fusedMapMutex_;
 

@@ -4,7 +4,7 @@
     <node pkg="mapping" type="mapping" name="mapping" respawn="true">
     	<param name="length_in_x" value ="70.0"/>
     	<param name="length_in_y" value="70.0"/>
-    	<param name="resolution" value ="0.25"/>
+    	<param name="resolution" value ="0.5"/>
     	<param name="min_variance" value="0.0009"/>
     	<param name="max_variance" value="0.09"/>
     	<param name="mahalanobis_distance_threshold" value="0.5"/> <!-- 0.8 -->
@@ -24,9 +24,9 @@
     </node>
 
     <node pkg ="mapping" type="map_build_node" name="map_build_node" respawn="true" output="screen">
-    	<param name="base_height" value="0.30"/>
+    	<param name="base_height" value="0.40"/>
     	<param name="robot_width" value="1.4"/>
-    	<param name="erode_size" value= "0"/>
+    	<param name="erode_size" value= "2"/>
     	<param name="map_topic" value="/mapping/ele_map"/>
     </node>
 

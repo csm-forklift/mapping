@@ -1,13 +1,13 @@
 <launch>
 
     <!-- Commenting this out until we know that dilation is working correctly!! -->
-    <node pkg="mapping" type="mapping" name="mapping" respawn="true" output="screen">
+    <node pkg="mapping" type="mapping" name="mapping" respawn="true">
     	<param name="length_in_x" value ="70.0"/>
     	<param name="length_in_y" value="70.0"/>
-    	<param name="resolution" value ="0.5"/>
+    	<param name="resolution" value ="0.25"/>
     	<param name="min_variance" value="0.0009"/>
     	<param name="max_variance" value="0.09"/>
-    	<param name="mahalanobis_distance_threshold" value="0.08"/>
+    	<param name="mahalanobis_distance_threshold" value="0.5"/> <!-- 0.8 -->
     	<param name="min_horizontal_variance" value=".125"/>
     	<param name="max_horizontal_variance" value="0.5"/>
     	<param name="multi_height_noise" value="0.0009"/>

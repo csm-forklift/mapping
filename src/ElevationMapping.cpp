@@ -65,7 +65,7 @@ ElevationMapping::ElevationMapping(ros::NodeHandle nodeHandle)
       //listener.waitForTransform("/odom", "/map",ros::Time(0), ros::Duration(0.5));
     //  listener.lookupTransform("/odom", "/map", ros::Time(0), tran3);
     // robot frame to map frame
-    listener.waitForTransform("/base_link", "/world",ros::Time(0), ros::Duration(0.2));
+    listener.waitForTransform("/base_link", "/world", ros::Time(0), ros::Duration(0.2));
     listener.lookupTransform("/base_link", "/world", ros::Time(0), tran3);
   }
   catch(tf::TransformException ex) {

@@ -133,7 +133,7 @@ bool ElevationMap::add(const pcl::PointCloud<pcl::PointXYZRGB>::Ptr pointCloud, 
   debug_pcl_pub.publish(msg);
 
   int counter = 0;
-  int counter2 =0;
+  int counter2 = 0;
   for (unsigned int i = 0; i < pointCloud->size(); ++i) {
     auto& point = pointCloud->points[i];
 
@@ -193,7 +193,7 @@ bool ElevationMap::add(const pcl::PointCloud<pcl::PointXYZRGB>::Ptr pointCloud, 
     //colorVectorToValue(point.getRGBVector3i(), color);
 
     if (!std::isfinite(elevation)) {
-        std::cout << "ELEVATION NOT FINITE!\n";
+        std::cout << "ELEVATION NOT FINITE! Variance: " << variance << "Point variance: " << pointVariance << "\n";
     }
 
     // Horizontal variances are reset.
@@ -201,9 +201,6 @@ bool ElevationMap::add(const pcl::PointCloud<pcl::PointXYZRGB>::Ptr pointCloud, 
     horizontalVarianceY = minHorizontalVariance_;
     horizontalVarianceXY = 0.0;
   }
-
-  // DEBUG:
-  std::cout << "Counter: " << counter << "\n";
 
   clean();
   rawMap_.setTimestamp(1000 * pointCloud->header.stamp); // Point cloud stores time in microseconds.
@@ -298,7 +295,7 @@ bool ElevationMap::fuse(const grid_map::Index& topLeftIndex, const grid_map::Ind
   const double ellipseExtension = M_SQRT2 * fusedMap_.getResolution();
 
   // Check if there is the need to reset out-dated data.
-  if (fusedMap_.getTimestamp() != rawMapCopy.getTimestamp()) resetFusedData();
+  //if (fusedMap_.getTimestamp() != rawMapCopy.getTimestamp()) resetFusedData();
 
   // Align fused map with raw map.
   if (rawMapCopy.getPosition() != fusedMap_.getPosition()) fusedMap_.move(rawMapCopy.getPosition());
@@ -445,7 +442,7 @@ bool ElevationMap::fuse(const grid_map::Index& topLeftIndex, const grid_map::Ind
  // return ElevationMap::computeSurfaceNormals(topLeftIndex, size);
  //
  // }
- 
+
   return true;
 }
 

@@ -1,9 +1,0 @@
-<launch>
-
-    
-    <include file="$(find mapping)/launch/mapping_tf.launch"/>
-
-    <node pkg="mapping" type="lidar_merge_node" name="lidar_merge_node" respawn="true" output="screen">    	
-    </node>
-
-</launch>
